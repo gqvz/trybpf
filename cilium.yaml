@@ -1,0 +1,15 @@
+kind: CiliumNetworkPolicy
+apiVersion: cilium.io/v2
+metadata:
+  name: allow-access-to-api-server
+  namespace: jhub
+spec:
+  endpointSelector:
+    matchLabels: {}
+  egress:
+    - toEntities:
+        - kube-apiserver
+    - toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP

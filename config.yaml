@@ -1,0 +1,42 @@
+singleuser:
+  fsGid: 0
+  uid: 0
+  image:
+    name: ghcr.io/gqvz/trybpf-notebook
+    tag:  x86_64-ubuntu-24.04-4
+  cmd: ["/bin/sh", "-c", "sudo mount -t debugfs none /sys/kernel/debug || true && sudo -E jupyterhub-singleuser --allow-root"]
+  allowPrivilegeEscalation: true
+
+  extraPodConfig:
+    runtimeClassName: kata-qemu-btf
+hub:
+  extraConfig:
+    addCaps.py: |
+      from kubespawner import KubeSpawner
+
+      class CapSpawner(KubeSpawner):
+          def container_security_context(self, thing):
+            return {"capabilities": {"add": ["SYS_ADMIN"]}, "privilaged": True}
+
+      c.JupyterHub.spawner_class = CapSpawner
+  config:
+    GitHubOAuthenticator:
+      allow_all: true
+      client_id: nonoj
+      client_secret: nono
+      oauth_callback_url: https://trybpf.gqvz.xyz/hub/oauth_callback
+    JupyterHub:
+      authenticator_class: github
+    Authenticator:
+      admin_users:
+        - gqvz
+        - varun-r-mallya
+      auto_login: true
+
+proxy:
+  https:
+    enabled: true
+    hosts:
+      - trybpf.gqvz.xyz
+    letsencrypt:
+      contactEmail: sharmagarvit614@gmail.com
