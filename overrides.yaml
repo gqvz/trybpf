@@ -1,0 +1,4 @@
+image:
+  reference: ghcr.io/gqvz/trybpf-kata-deply
+env:
+  shims: "qemu-btf"
